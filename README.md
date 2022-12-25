@@ -1,6 +1,6 @@
 # SCLIAP
 
-[![Nuget](https://img.shields.io/nuget/v/SCLIAP)](https://www.nuget.org/packages/SCLIAP/) [![Build status](https://img.shields.io/appveyor/build/MrZnake/scliap)](https://ci.appveyor.com/project/mrznake/scliap/branch/master) [![CodeFactor](https://www.codefactor.io/repository/github/mzknek/scliap/badge)](https://www.codefactor.io/repository/github/mzknek/scliap) [![License](https://img.shields.io/github/license/MZKNEK/scliap)](https://github.com/MZKNEK/scliap/blob/master/LICENSE)
+[![Nuget](https://img.shields.io/nuget/v/SCLIAP)](https://www.nuget.org/packages/SCLIAP/) [![codecov](https://img.shields.io/codecov/c/github/MZKNEK/scliap?token=J00M8DUKGD)](https://codecov.io/gh/MZKNEK/scliap) [![Build status](https://img.shields.io/appveyor/build/MrZnake/scliap)](https://ci.appveyor.com/project/mrznake/scliap/branch/master) [![CodeFactor](https://www.codefactor.io/repository/github/mzknek/scliap/badge)](https://www.codefactor.io/repository/github/mzknek/scliap) [![License](https://img.shields.io/github/license/MZKNEK/scliap)](https://github.com/MZKNEK/scliap/blob/master/LICENSE)
 
 Simple CLI Arguments Parser
 
