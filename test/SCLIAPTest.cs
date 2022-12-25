@@ -39,7 +39,6 @@ public class SCLIAPTest
             new((arg, _) => { arg.Verbose = true; },
             "enable verbose"));
 
-
         var o = parser.Parse(new string[] { "-hv" });
         Assert.IsTrue(o.Verbose);
         Assert.IsTrue(o.Help);
