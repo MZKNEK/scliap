@@ -4,14 +4,16 @@ public class SimpleCLIArgsParser<T> where T : class, new()
 {
     private Dictionary<string, OptionInfo<T>> _options = new();
 
-    public void AddOption(string optionName, OptionInfo<T> info)
+    public SimpleCLIArgsParser<T> AddOption(string optionName, OptionInfo<T> info)
     {
         _options.Add(optionName, info);
         if (info.Alias is not null)
             _options.Add(info.Alias, info.MakeAlias());
+
+        return this;
     }
 
-    public void AddDefaultHelpOptions(OptionInfo<T>.OptionAction action, string description
+    public SimpleCLIArgsParser<T> AddDefaultHelpOptions(OptionInfo<T>.OptionAction action, string description
         = "prints help") => AddOption("-h", new(action, description, alias: "--help"));
 
     public string GetHelp() => string.Join("\n", _options.Where(x => x.Value.ShowInHelp)
