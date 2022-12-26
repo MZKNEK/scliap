@@ -154,4 +154,34 @@ public class SCLIAPTest
         var o2 = parser.Parse(new string[] { "-v" });
         Assert.IsTrue(o2.Verbose);
     }
+
+    [TestMethod]
+    public void AddOptionBySetTrueTest()
+    {
+        var parser = ArgumentsFields.Default.Configure();
+
+        var o = parser.Parse(new string[] { "-hv" });
+        Assert.IsTrue(o.Help);
+        Assert.IsTrue(o.Test);
+        Assert.IsTrue(o.Verbose);
+    }
+
+    [TestMethod]
+    public void RunOptionWithoutSecondArgTest()
+    {
+        var parser = ArgumentsFields.Default.Configure();
+        parser.AddOption("-i", new((arg, nextArg) =>
+                {
+                    if (!File.Exists(nextArg))
+                    {
+                        throw new Exception($"Missing file! ({nextArg})");
+                    }
+                    arg.Input = new(nextArg);
+                },
+            "",
+            needNextArgument: true));
+
+        var o = parser.Parse(new string[] { "-i" });
+        Assert.IsNull(o.Input);
+    }
 }
