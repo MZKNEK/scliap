@@ -51,9 +51,6 @@ public class SimpleCLIArgsParser<T> where T : class, new()
         if (option.NeedNextArgument && nextArg == string.Empty)
             return;
 
-        if (option.Action is null)
-            return;
-
         option.Action(args, nextArg);
         if (option.NeedNextArgument)
             index++;
