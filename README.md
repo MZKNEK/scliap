@@ -6,14 +6,14 @@ Simple CLI Arguments Parser
 
 ## Usage
 
-Make class that will be storing your args.
+Make class that will be storing your args, and configure parser.
 
 ```csharp
-public class Arguments
+public class Arguments : ArgsHelper<Arguments>
 {
-    public bool Help { get; set; }
-    public bool Verbose { get; set; }
-    public DirectoryInfo? OutputPath { get; set; }
+    public bool Help;
+    public bool Verbose;
+    public DirectoryInfo? OutputPath;
 
     public Arguments()
     {
@@ -21,16 +21,40 @@ public class Arguments
         Verbose = false;
         OutputPath = null;
     }
+
+    public static ArgumentsFields Default => new();
+
+    public override SimpleCLIArgsParser<ArgumentsFields> Configure() =>
+        new SimpleCLIArgsParser<ArgumentsFields>()
+        .AddDefaultHelpOptions(True(Help))
+        .AddOption("-v", new(True(Verbose),
+            "enable verbose mode"))
+        .AddOption("-o", new((arg, nextArg) =>
+            {
+                if (!Path.Exists(nextArg))
+                {
+                    throw new Exception($"Path {nextArg} don't exist!");
+                }
+                arg.OutputPath = new(nextArg);
+            }
+        "setup output location",
+        needNextArgument: true);
 }
 ```
 
-Create parser and add options.
+Or create parser and add options externally. In this case you don't need to use `ArgsHelper`.
 
 ```csharp
 var parser = new SimpleCLIArgsParser<Arguments>();
 // adds -h option with --help alias
 parser.AddDefaultHelpOptions((arg, _) => { arg.Help = true; });
-parser.AddOption("-v", new((arg, _) => { arg.Verbose = true; }, "adds additional information to output"));
+
+// hide option from help
+parser.AddOption("-v", new((arg, _) =>
+    { arg.Verbose = true; },
+    "adds more info to output",
+    showInHelp: false));
+
 // retrieve string that is after your argument and use it
 parser.AddOption("-o", new((arg, nextArg) =>
     {
@@ -41,14 +65,20 @@ parser.AddOption("-o", new((arg, nextArg) =>
         arg.OutputPath = new(nextArg);
     },
     "setup output location",
+    // for that you need set this to true
+    needNextArgument: true,
     // setup alias for your oprion
     alias: "--output"));
 ```
 
-Parse input args and use them in your program.
+Parse input and use it in your program.
 
 ```csharp
-var parsedArgs = parser.Parse(args);
+// with implemented ArgsHelper
+var parsedArgs = Arguments.Default.Configure().Parse(args);
+
+// or externally
+parsedArgs = parser.Parse(args);
 if (parsedArgs.Help)
 {
     // easily provide help for your program
