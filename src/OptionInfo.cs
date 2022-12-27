@@ -15,7 +15,7 @@ public class OptionInfo<T> where T : class, new()
         bool needNextArgument = false, bool showInHelp = true, string? longName = default!)
     {
         if (name is null && string.IsNullOrEmpty(longName))
-            throw new OptionInfoException("OptionInfo: name or longName must be set.");
+            throw new OptionInfoException($"{nameof(name)} or {nameof(longName)} must be set.");
 
         Name = name;
         Action = action;

@@ -8,12 +8,12 @@ public class OptionInfoException : Exception
     }
 
     public OptionInfoException(string message)
-        : base(message)
+        : base($"OptionInfo: {message}")
     {
     }
 
     public OptionInfoException(string message, Exception inner)
-        : base(message, inner)
+        : base($"OptionInfo: {message}", inner)
     {
     }
 }

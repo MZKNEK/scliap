@@ -47,13 +47,25 @@ public class SCLIAPTest
     public void FailToAddOptionTest()
     {
         var parser = new SimpleCLIArgsParser<ArgumentsFields>();
+        OptionInfoException exception = null!;
 
-        Assert.ThrowsException<OptionInfoException>(() => { parser.AddOption(new((arg, _) => {}, "")); });
+        try
+        {
+            parser.AddOption(new((arg, _) => {}, ""));
+        }
+        catch(OptionInfoException ex)
+        {
+            exception = ex;
+        }
+
+        Assert.IsNotNull(exception);
+        Assert.AreEqual("OptionInfo: name or longName must be set.", exception.Message);
     }
 
     [TestMethod]
     public void OptionInfoExceptionTest()
     {
+        Assert.AreEqual("OptionInfo: Test", new OptionInfoException("Test").Message);
         Assert.ThrowsException<OptionInfoException>(() => { throw new OptionInfoException(); });
         Assert.ThrowsException<OptionInfoException>(() => { throw new OptionInfoException("Test"); });
         Assert.ThrowsException<OptionInfoException>(() => { throw new OptionInfoException("Test 2", new Exception("Test 1")); });
