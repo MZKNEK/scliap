@@ -21,10 +21,12 @@ public class ArgumentsFields : ArgsHelper<ArgumentsFields>
 
     public static ArgumentsFields Default => new();
 
-    public override SimpleCLIArgsParser<ArgumentsFields> Configure() =>
-        new SimpleCLIArgsParser<ArgumentsFields>()
-        .AddDefaultHelpOptions(True(Help))
-        .AddOption(new(True(Verbose, Test),
-            "enable verbose mode",
-            name: 'v'));
+    public override SimpleCLIArgsParser<ArgumentsFields> Configure(Configuration config = default!)
+    {
+        return new SimpleCLIArgsParser<ArgumentsFields>(config)
+            .AddDefaultHelpOptions(True(Help))
+            .AddOption(new(True(Verbose, Test),
+                "enable verbose mode",
+                name: 'v'));
+    }
 }

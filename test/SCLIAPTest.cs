@@ -63,6 +63,14 @@ public class SCLIAPTest
     }
 
     [TestMethod]
+    public void FailToAddOptionDOSTest()
+    {
+        var parser = new SimpleCLIArgsParser<ArgumentsFields>(new() { Style = ArgsStyle.DOS });
+
+        Assert.ThrowsException<SCLIAPException>(() => { parser.AddOption(new((arg, _) => {}, "", longName: "test")); });
+    }
+
+    [TestMethod]
     public void OptionInfoExceptionTest()
     {
         Assert.AreEqual("OptionInfo: Test", new OptionInfoException("Test").Message);
@@ -205,5 +213,52 @@ public class SCLIAPTest
 
         var o = parser.Parse(new string[] { "-i" });
         Assert.IsNull(o.Input);
+    }
+
+    [TestMethod]
+    public void InvalidArgThrowExceptionTest()
+    {
+        var parser = ArgumentsFields.Default.Configure(
+            new() { Behavior = InvalidOptionBehavior.ThrowException })
+            .AddOption(new((arg, _) => {}, "", 'o', true));
+
+        Assert.ThrowsException<SCLIAPException>(() => { parser.Parse(new string[] { "-o" }); });
+    }
+
+    [TestMethod]
+    public void DOSArgStyleTest()
+    {
+        var parser = ArgumentsFields.Default.Configure(new() { Style = ArgsStyle.DOS })
+            .AddOption(new((arg, nextArg) =>
+                {
+                    arg.Output = new(nextArg);
+                },
+            "", 'o', true))
+            .AddOption(new((arg, nextArg) =>
+                {
+                    arg.Output = null;
+                },
+            "", 'i', true));
+
+        var o = parser.Parse(new string[] { "/h", "/o:.", "/v", "/t", "/i:a:"});
+        Assert.IsTrue(o.Help);
+        Assert.IsTrue(o.Test);
+        Assert.IsTrue(o.Verbose);
+        Assert.IsNotNull(o.Output);
+    }
+
+    [TestMethod]
+    public void InvalidArgDOSThrowExceptionTest()
+    {
+        var parser = ArgumentsFields.Default.Configure(new()
+            {
+                Style = ArgsStyle.DOS,
+                Behavior = InvalidOptionBehavior.ThrowException
+            })
+            .AddOption(new((arg, _) => {}, "", 'o', true))
+            .AddOption(new((arg, _) => {}, "", 'i', true));
+
+        Assert.ThrowsException<SCLIAPException>(() => { parser.Parse(new string[] { "/o" }); });
+        Assert.ThrowsException<SCLIAPException>(() => { parser.Parse(new string[] { "/i:a:" }); });
     }
 }
