@@ -24,6 +24,7 @@ public class ArgumentsFields : ArgsHelper<ArgumentsFields>
     public override SimpleCLIArgsParser<ArgumentsFields> Configure() =>
         new SimpleCLIArgsParser<ArgumentsFields>()
         .AddDefaultHelpOptions(True(Help))
-        .AddOption("-v", new(True(Verbose, Test),
-            "enable verbose mode"));
+        .AddOption(new(True(Verbose, Test),
+            "enable verbose mode",
+            name: 'v'));
 }

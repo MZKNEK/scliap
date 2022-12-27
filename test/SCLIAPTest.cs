@@ -34,10 +34,9 @@ public class SCLIAPTest
     {
         var parser = new SimpleCLIArgsParser<ArgumentsFields>();
         parser.AddDefaultHelpOptions((arg, _) => { arg.Help = true; });
-        parser.AddOption(
-            "-v",
-            new((arg, _) => { arg.Verbose = true; },
-            "enable verbose"));
+        parser.AddOption(new((arg, _) => { arg.Verbose = true; },
+            "enable verbose",
+            name: 'v'));
 
         var o = parser.Parse(new string[] { "-hv" });
         Assert.IsTrue(o.Verbose);
@@ -45,12 +44,18 @@ public class SCLIAPTest
     }
 
     [TestMethod]
+    public void FailToAddOptionTest()
+    {
+        var parser = new SimpleCLIArgsParser<ArgumentsFields>();
+
+        Assert.ThrowsException<OptionInfoException>(() => { parser.AddOption(new((arg, _) => {}, "")); });
+    }
+
+    [TestMethod]
     public void AddOptionNextArgTest()
     {
         var parser = new SimpleCLIArgsParser<ArgumentsFields>();
-        parser.AddOption(
-            "-o",
-            new((arg, nextArg) =>
+        parser.AddOption(new((arg, nextArg) =>
                 {
                     if (!Path.Exists(nextArg))
                     {
@@ -59,6 +64,7 @@ public class SCLIAPTest
                     arg.Output = new(nextArg);
                 },
             "output path",
+            name: 'o',
             needNextArgument: true));
 
         var  o = parser.Parse(new string[] { "-o", "./" });
@@ -72,14 +78,11 @@ public class SCLIAPTest
         var parser = new SimpleCLIArgsParser<ArgumentsFields>();
         parser.AddDefaultHelpOptions((arg, _) => { arg.Help = true; });
 
-        parser.AddOption(
-            "-v",
-            new((arg, _) => { arg.Verbose = true; },
-            "enable verbose"));
+        parser.AddOption(new((arg, _) => { arg.Verbose = true; },
+            "enable verbose",
+            name: 'v'));
 
-        parser.AddOption(
-            "-i",
-            new((arg, nextArg) =>
+        parser.AddOption(new((arg, nextArg) =>
                 {
                     if (!Path.Exists(nextArg))
                     {
@@ -88,13 +91,12 @@ public class SCLIAPTest
                     arg.Input = new(nextArg);
                 },
             "input path",
+            name: 'i',
             needNextArgument: true,
             showInHelp: false,
-            alias: "--input"));
+            longName: "input"));
 
-        parser.AddOption(
-            "-o",
-            new((arg, nextArg) =>
+        parser.AddOption(new((arg, nextArg) =>
                 {
                     if (!Path.Exists(nextArg))
                     {
@@ -103,8 +105,9 @@ public class SCLIAPTest
                     arg.Output = new(nextArg);
                 },
             "output path",
+            name: 'o',
             needNextArgument: true,
-            alias: "--out"));
+            longName: "out"));
 
         var o = parser.Parse(new string[] { "-hvo", "./", "--input", "./" });
         Assert.IsNotNull(o.Input);
@@ -120,10 +123,9 @@ public class SCLIAPTest
     public void AddOptionOnlyWithLongNameTest()
     {
         var parser = new SimpleCLIArgsParser<ArgumentsFields>();
-        parser.AddOption(
-            "--verbose",
-            new((arg, _) => { arg.Verbose = true; },
-            "enable verbose"));
+        parser.AddOption(new((arg, _) => { arg.Verbose = true; },
+            "enable verbose",
+            longName: "verbose"));
 
         var o = parser.Parse(new string[] { "-verbose" });
         Assert.IsFalse(o.Verbose);
@@ -142,11 +144,10 @@ public class SCLIAPTest
     public void AddOptionWithAliasTest()
     {
         var parser = new SimpleCLIArgsParser<ArgumentsFields>();
-        parser.AddOption(
-            "-v",
-            new((arg, _) => { arg.Verbose = true; },
+        parser.AddOption(new((arg, _) => { arg.Verbose = true; },
             "enable verbose",
-            alias: "--alias"));
+            name: 'v',
+            longName: "alias"));
 
         var o = parser.Parse(new string[] { "--alias" });
         Assert.IsTrue(o.Verbose);
@@ -170,7 +171,7 @@ public class SCLIAPTest
     public void RunOptionWithoutSecondArgTest()
     {
         var parser = ArgumentsFields.Default.Configure();
-        parser.AddOption("-i", new((arg, nextArg) =>
+        parser.AddOption(new((arg, nextArg) =>
                 {
                     if (!File.Exists(nextArg))
                     {
@@ -179,6 +180,7 @@ public class SCLIAPTest
                     arg.Input = new(nextArg);
                 },
             "",
+            name: 'i',
             needNextArgument: true));
 
         var o = parser.Parse(new string[] { "-i" });
