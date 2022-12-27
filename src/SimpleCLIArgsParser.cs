@@ -4,23 +4,28 @@ public class SimpleCLIArgsParser<T> where T : class, new()
 {
     private Dictionary<string, OptionInfo<T>> _options = new();
 
-    public SimpleCLIArgsParser<T> AddOption(string optionName, OptionInfo<T> info)
+    public SimpleCLIArgsParser<T> AddOption(OptionInfo<T> info)
     {
-        _options.Add(optionName, info);
-        if (info.Alias is not null)
-            _options.Add(info.Alias, info.MakeAlias());
+        if (info.Name is not null)
+            _options.Add($"-{info.Name}", info);
+
+        if (info.LongName is not null)
+            _options.Add($"--{info.LongName}", info.MakeAlias());
 
         return this;
     }
 
     public SimpleCLIArgsParser<T> AddDefaultHelpOptions(OptionInfo<T>.OptionAction action, string description
-        = "prints help") => AddOption("-h", new(action, description, alias: "--help"));
+        = "prints help") => AddOption(new(action, description, name: 'h', longName: "help"));
 
     public string GetHelp() => string.Join("\n", _options.Where(x => x.Value.ShowInHelp)
         .Select(x => GetHelpEntry(x)));
 
     private string GetHelpEntry(KeyValuePair<string, OptionInfo<T>> x) =>
-        $"{x.Key}{(x.Value.Alias is not null ? ", " : "\t") + x.Value.Alias ?? ""}\t{x.Value.Description}";
+        $"{x.Key}{GetLongNameForHelp(x.Value)}\t{x.Value.Description}";
+
+    private string GetLongNameForHelp(OptionInfo<T> o) =>
+        string.IsNullOrEmpty(o.LongName) ? "\t" : $", --{o.LongName}";
 
     public T Parse(string[] args)
     {
