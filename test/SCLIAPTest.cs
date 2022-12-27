@@ -52,6 +52,14 @@ public class SCLIAPTest
     }
 
     [TestMethod]
+    public void OptionInfoExceptionTest()
+    {
+        Assert.ThrowsException<OptionInfoException>(() => { throw new OptionInfoException(); });
+        Assert.ThrowsException<OptionInfoException>(() => { throw new OptionInfoException("Test"); });
+        Assert.ThrowsException<OptionInfoException>(() => { throw new OptionInfoException("Test 2", new Exception("Test 1")); });
+    }
+
+    [TestMethod]
     public void AddOptionNextArgTest()
     {
         var parser = new SimpleCLIArgsParser<ArgumentsFields>();
