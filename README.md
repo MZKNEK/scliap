@@ -27,9 +27,10 @@ public class Arguments : ArgsHelper<Arguments>
     public override SimpleCLIArgsParser<Arguments> Configure() =>
         new SimpleCLIArgsParser<Arguments>()
         .AddDefaultHelpOptions(True(Help))
-        .AddOption("-v", new(True(Verbose),
-            "enable verbose mode"))
-        .AddOption("-o", new((arg, nextArg) =>
+        .AddOption(new(True(Verbose),
+            "enable verbose mode",
+            name: 'v'))
+        .AddOption(new((arg, nextArg) =>
             {
                 if (!Path.Exists(nextArg))
                 {
@@ -38,6 +39,7 @@ public class Arguments : ArgsHelper<Arguments>
                 arg.OutputPath = new(nextArg);
             }
         "set output location",
+        name: 'o',
         needNextArgument: true);
 }
 ```
@@ -46,17 +48,18 @@ Or create parser and add options externally. In this case you don't need to inhe
 
 ```csharp
 var parser = new SimpleCLIArgsParser<Arguments>();
-// adds -h option with --help alias
+// adds h option with help alias
 parser.AddDefaultHelpOptions((arg, _) => { arg.Help = true; });
 
 // hide option in help
-parser.AddOption("-v", new((arg, _) =>
-    { arg.Verbose = true; },
+parser.AddOption(new((arg, _) => { arg.Verbose = true; },
     "adds more info to output",
+    // single char as name
+    name: 'v',
     showInHelp: false));
 
 // retrieve string that that follows it
-parser.AddOption("-o", new((arg, nextArg) =>
+parser.AddOption(new((arg, nextArg) =>
     {
         if (!Path.Exists(nextArg))
         {
@@ -65,10 +68,12 @@ parser.AddOption("-o", new((arg, nextArg) =>
         arg.OutputPath = new(nextArg);
     },
     "set output location",
+    // name or longName is required
+    name: 'o',
     // for that you need set needNextArgument to true
     needNextArgument: true,
     // setup alias for your oprion
-    alias: "--output"));
+    longName: "output"));
 ```
 
 Use the `Parse` method of the parser instance to parse arguments passed to your program.

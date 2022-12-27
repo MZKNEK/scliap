@@ -26,11 +26,15 @@ Create parser and add options.
 
 ```csharp
 var parser = new SimpleCLIArgsParser<Arguments>();
-// adds -h option with --help alias
+// adds h option with help alias
 parser.AddDefaultHelpOptions((arg, _) => { arg.Help = true; });
-parser.AddOption("-v", new((arg, _) => { arg.Verbose = true; }, "adds more info to output"));
+parser.AddOption(new((arg, _) => { arg.Verbose = true; },
+    "adds more info to output",
+    // single char as name
+    name: 'v'));
+
 // retrieve string that is after your argument and use it
-parser.AddOption("-o", new((arg, nextArg) =>
+parser.AddOption(new((arg, nextArg) =>
     {
         if (!Path.Exists(nextArg))
         {
@@ -39,9 +43,11 @@ parser.AddOption("-o", new((arg, nextArg) =>
         arg.OutputPath = new(nextArg);
     },
     "setup output location",
+    // name or longName is required
+    name: 'o',
     needNextArgument: true,
-    // setup alias for your oprion
-    alias: "--output"));
+    // setup long name(alias) for your option
+    longName: "output"));
 ```
 
 Parse input args and use them in your program.
