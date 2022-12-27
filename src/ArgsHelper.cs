@@ -5,7 +5,7 @@ namespace SCLIAP;
 
 public abstract class ArgsHelper<T> where T : class, new()
 {
-    public abstract SimpleCLIArgsParser<T> Configure();
+    public abstract SimpleCLIArgsParser<T> Configure(Configuration config = default!);
 
     protected OptionInfo<T>.OptionAction True(bool param1, bool? param2 = null,
         [CallerArgumentExpression(nameof(param1))]string paramName1 = default!,

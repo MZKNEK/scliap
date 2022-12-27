@@ -1,6 +1,6 @@
 namespace SCLIAP;
 
-public class OptionInfoException : Exception
+public class OptionInfoException : SCLIAPException
 {
     public OptionInfoException()
         : base()

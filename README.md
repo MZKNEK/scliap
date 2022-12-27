@@ -24,23 +24,24 @@ public class Arguments : ArgsHelper<Arguments>
 
     public static Arguments Default => new();
 
-    public override SimpleCLIArgsParser<Arguments> Configure() =>
-        new SimpleCLIArgsParser<Arguments>()
-        .AddDefaultHelpOptions(True(Help))
-        .AddOption(new(True(Verbose),
-            "enable verbose mode",
-            name: 'v'))
-        .AddOption(new((arg, nextArg) =>
-            {
-                if (!Path.Exists(nextArg))
+    public override SimpleCLIArgsParser<Arguments> Configure(
+        Configuration config = default!) =>
+            new SimpleCLIArgsParser<Arguments>(config)
+            .AddDefaultHelpOptions(True(Help))
+            .AddOption(new(True(Verbose),
+                "enable verbose mode",
+                name: 'v'))
+            .AddOption(new((arg, nextArg) =>
                 {
-                    throw new Exception($"Path {nextArg} don't exist!");
+                    if (!Path.Exists(nextArg))
+                    {
+                        throw new Exception($"Path {nextArg} don't exist!");
+                    }
+                    arg.OutputPath = new(nextArg);
                 }
-                arg.OutputPath = new(nextArg);
-            }
-        "set output location",
-        name: 'o',
-        needNextArgument: true);
+            "set output location",
+            name: 'o',
+            needNextArgument: true);
 }
 ```
 
