@@ -3,11 +3,11 @@ using System.Runtime.CompilerServices;
 
 namespace SCLIAP;
 
-public abstract class ArgsHelper<T> where T : class, new()
+public abstract class ArgsHelper<TSelf> where TSelf : class, new()
 {
-    public abstract SimpleCLIArgsParser<T> Configure(Configuration config = default!);
+    public abstract SimpleCLIArgsParser<TSelf> Configure(Configuration config = default!);
 
-    protected OptionInfo<T>.OptionAction True(bool param1, bool? param2 = null,
+    protected Action<TSelf, string> True(bool param1, bool? param2 = null,
         [CallerArgumentExpression(nameof(param1))]string paramName1 = default!,
         [CallerArgumentExpression(nameof(param2))]string paramName2 = default!)
     {
@@ -19,7 +19,7 @@ public abstract class ArgsHelper<T> where T : class, new()
         };
     }
 
-    private static void SetTrue(T arg, string paramName)
+    private static void SetTrue(TSelf arg, string paramName)
     {
         var t = arg.GetType();
         var m = t.GetProperty(paramName,

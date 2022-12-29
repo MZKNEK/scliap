@@ -1,9 +1,9 @@
 namespace SCLIAP;
 
-public class SimpleCLIArgsParser<T> where T : class, new()
+public class SimpleCLIArgsParser<TSelf> where TSelf : class, new()
 {
     private readonly Configuration _config;
-    private Dictionary<string, OptionInfo<T>> _options;
+    private Dictionary<string, OptionInfo<TSelf>> _options;
 
     public SimpleCLIArgsParser(Configuration config = default!)
     {
@@ -11,7 +11,7 @@ public class SimpleCLIArgsParser<T> where T : class, new()
         _options = new();
     }
 
-    public SimpleCLIArgsParser<T> AddOption(OptionInfo<T> info)
+    public SimpleCLIArgsParser<TSelf> AddOption(OptionInfo<TSelf> info)
     {
         if (_config.Style == ArgsStyle.DOS)
         {
@@ -31,21 +31,21 @@ public class SimpleCLIArgsParser<T> where T : class, new()
         return this;
     }
 
-    public SimpleCLIArgsParser<T> AddDefaultHelpOptions(OptionInfo<T>.OptionAction action, string description
+    public SimpleCLIArgsParser<TSelf> AddDefaultHelpOptions(Action<TSelf, string> action, string description
         = "prints help") => AddOption(new(action, description, name: 'h', longName: "help"));
 
     public string GetHelp() => string.Join("\n", _options.Where(x => x.Value.ShowInHelp)
         .Select(x => GetHelpEntry(x)));
 
-    private string GetHelpEntry(KeyValuePair<string, OptionInfo<T>> x) =>
+    private string GetHelpEntry(KeyValuePair<string, OptionInfo<TSelf>> x) =>
         $"{x.Key}{GetLongNameForHelp(x.Value)}\t{x.Value.Description}";
 
-    private string GetLongNameForHelp(OptionInfo<T> o) =>
+    private string GetLongNameForHelp(OptionInfo<TSelf> o) =>
         string.IsNullOrEmpty(o.LongName) ? "\t" : $", --{o.LongName}";
 
-    public T Parse(string[] args)
+    public TSelf Parse(string[] args)
     {
-        var parsedArgs = new T();
+        var parsedArgs = new TSelf();
         for (var i = 0; i < args.Length; i++)
         {
             var arg = args[i];
@@ -101,7 +101,7 @@ public class SimpleCLIArgsParser<T> where T : class, new()
         return true;
     }
 
-    private void ExecuteParam(OptionInfo<T> option, string nextArg, ref int index, ref T args)
+    private void ExecuteParam(OptionInfo<TSelf> option, string nextArg, ref int index, ref TSelf args)
     {
         if (option.NeedNextArgument && nextArg == string.Empty)
         {

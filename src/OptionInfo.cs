@@ -1,21 +1,20 @@
 namespace SCLIAP;
 
-public class OptionInfo<T> where T : class, new()
+public class OptionInfo<TSelf> where TSelf : class, new()
 {
-    public delegate void OptionAction(T argClass, string nextArg);
-
     public char? Name { get; init; }
     public bool ShowInHelp { get; init; }
     public string? LongName { get; init; }
     public string Description { get; init; }
-    public OptionAction Action { get; init; }
     public bool NeedNextArgument { get; init; }
+    public Action<TSelf, string> Action { get; init; }
 
-    public OptionInfo(OptionAction action, string desc, char? name = default!,
+    public OptionInfo(Action<TSelf, string> action, string desc, char? name = default!,
         bool needNextArgument = false, bool showInHelp = true, string? longName = default!)
     {
         if (name is null && string.IsNullOrEmpty(longName))
-            throw new OptionInfoException($"{nameof(name)} or {nameof(longName)} must be set.");
+            throw new OptionInfoException($"{nameof(name)} or {nameof(longName)} must be set.",
+                new ArgumentNullException($"{nameof(name)} and {nameof(longName)}"));
 
         Name = name;
         Action = action;
@@ -25,9 +24,9 @@ public class OptionInfo<T> where T : class, new()
         NeedNextArgument = needNextArgument;
     }
 
-    internal OptionInfo<T> MakeAlias() => new(this) { ShowInHelp = false, LongName = default!};
+    internal OptionInfo<TSelf> MakeAlias() => new(this) { ShowInHelp = false, LongName = default!};
 
-    private OptionInfo(OptionInfo<T> info)
+    private OptionInfo(OptionInfo<TSelf> info)
     {
         Name = info.Name;
         Action = info.Action;
