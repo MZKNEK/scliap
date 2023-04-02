@@ -14,6 +14,26 @@ public class SCLIAPTest
     }
 
     [TestMethod]
+    public void PrintHelpTest()
+    {
+        var parser = new SimpleCLIArgsParser<ArgumentsFields>();
+        parser.AddDefaultHelpOptions((arg, _) => { arg.Help = true; });
+        parser.AddOption(new((arg, _) => { arg.Verbose = true; },
+            "enable verbose",
+            name: 'v'));
+        parser.AddOption(new((arg, _) => { arg.Output = null; },
+            "enable path",
+            name: 'p',
+            longName: "path"));
+        parser.AddOption(new((arg, _) => { arg.Test = true; },
+            "enable test",
+            longName: "test"));
+
+        var exp = "-h,\t--help\tprints help\n-v  \t\tenable verbose\n-p,\t--path\tenable path\n\t--test\tenable test";
+        Assert.AreEqual(exp, parser.GetHelp());
+    }
+
+    [TestMethod]
     public void AddDefaultHelpTest()
     {
         var parser = new SimpleCLIArgsParser<ArgumentsFields>();

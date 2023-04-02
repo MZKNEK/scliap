@@ -22,7 +22,7 @@ public class SimpleCLIArgsParser<TSelf> where TSelf : class, new()
         }
         else
         {
-            if (info.Name is not null)
+            if (info.HasName)
                 _options.Add($"-{info.Name}", info);
 
             if (info.LongName is not null)
@@ -38,10 +38,13 @@ public class SimpleCLIArgsParser<TSelf> where TSelf : class, new()
         .Select(x => GetHelpEntry(x)));
 
     private string GetHelpEntry(KeyValuePair<string, OptionInfo<TSelf>> x) =>
-        $"{x.Key}{GetLongNameForHelp(x.Value)}\t{x.Value.Description}";
+        $"{GetNameForHelp(x)}{GetLongNameForHelp(x.Value)}\t{x.Value.Description}";
 
     private string GetLongNameForHelp(OptionInfo<TSelf> o) =>
-        string.IsNullOrEmpty(o.LongName) ? "\t" : $", --{o.LongName}";
+        string.IsNullOrEmpty(o.LongName) ? "  \t" : o.HasName ? $",\t--{o.LongName}" : $"--{o.LongName}";
+
+    private string GetNameForHelp(KeyValuePair<string, OptionInfo<TSelf>> x) =>
+        x.Value.HasName ? x.Key : "\t";
 
     public TSelf Parse(string[] args)
     {

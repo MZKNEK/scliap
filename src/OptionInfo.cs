@@ -24,7 +24,9 @@ public class OptionInfo<TSelf> where TSelf : class, new()
         NeedNextArgument = needNextArgument;
     }
 
-    internal OptionInfo<TSelf> MakeAlias() => new(this) { ShowInHelp = false, LongName = default!};
+    internal bool HasName => Name is not null;
+
+    internal OptionInfo<TSelf> MakeAlias() => new(this) { ShowInHelp = !this.HasName };
 
     private OptionInfo(OptionInfo<TSelf> info)
     {
