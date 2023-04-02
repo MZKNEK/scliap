@@ -26,7 +26,7 @@ public class OptionInfo<TSelf> where TSelf : class, new()
 
     internal bool HasName => Name is not null;
 
-    internal OptionInfo<TSelf> MakeAlias() => new(this) { ShowInHelp = !this.HasName };
+    internal OptionInfo<TSelf> MakeAlias() => new(this) { ShowInHelp = !this.HasName && this.ShowInHelp };
 
     private OptionInfo(OptionInfo<TSelf> info)
     {
