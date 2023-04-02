@@ -163,7 +163,7 @@ public class SCLIAPTest
         Assert.IsTrue(o.Verbose);
         Assert.IsTrue(o.Help);
 
-        var help = "-h, --help\tprints help\n-v\t\tenable verbose\n-o, --out\toutput path";
+        var help = "-h,\t--help\tprints help\n-v  \t\tenable verbose\n-o,\t--out\toutput path";
         Assert.AreEqual(help, parser.GetHelp());
     }
 
