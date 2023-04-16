@@ -163,7 +163,7 @@ public class SCLIAPTest
         Assert.IsTrue(o.Verbose);
         Assert.IsTrue(o.Help);
 
-        var help = "-h,\t--help\tprints help\n-v  \t\tenable verbose\n-o,\t--out\toutput path";
+        var help = "-h,\t--help\tprints help\n-v  \t\tenable verbose\n-o,\t--out \toutput path";
         Assert.AreEqual(help, parser.GetHelp());
     }
 
@@ -218,7 +218,7 @@ public class SCLIAPTest
     [TestMethod]
     public void RunOptionWithoutSecondArgTest()
     {
-        var parser = ArgumentsFields.Default.Configure();
+        var parser = ArgumentsFields.Default.Configure(new() { Behavior = InvalidOptionBehavior.Ignore });
         parser.AddOption(new((arg, nextArg) =>
                 {
                     if (!File.Exists(nextArg))
@@ -248,7 +248,7 @@ public class SCLIAPTest
     [TestMethod]
     public void DOSArgStyleTest()
     {
-        var parser = ArgumentsFields.Default.Configure(new() { Style = ArgsStyle.DOS })
+        var parser = ArgumentsFields.Default.Configure(new() { Style = ArgsStyle.DOS, Behavior = InvalidOptionBehavior.Ignore })
             .AddOption(new((arg, nextArg) =>
                 {
                     arg.Output = new(nextArg);

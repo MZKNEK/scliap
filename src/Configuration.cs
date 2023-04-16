@@ -2,7 +2,7 @@ namespace SCLIAP;
 
 public enum ArgsStyle
 {
-    UNIX,
+    POSIX,
     DOS
 }
 
@@ -14,6 +14,6 @@ public enum InvalidOptionBehavior
 
 public class Configuration
 {
-    public ArgsStyle Style { get; init; } = ArgsStyle.UNIX;
-    public InvalidOptionBehavior Behavior { get; init; } = InvalidOptionBehavior.Ignore;
+    public ArgsStyle Style { get; init; } = ArgsStyle.POSIX;
+    public InvalidOptionBehavior Behavior { get; init; } = InvalidOptionBehavior.ThrowException;
 }

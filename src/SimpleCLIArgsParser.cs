@@ -2,6 +2,7 @@ namespace SCLIAP;
 
 public class SimpleCLIArgsParser<TSelf> where TSelf : class, new()
 {
+    private int _maxLongName;
     private readonly Configuration _config;
     private Dictionary<string, OptionInfo<TSelf>> _options;
 
@@ -9,6 +10,7 @@ public class SimpleCLIArgsParser<TSelf> where TSelf : class, new()
     {
         _config = config ?? new();
         _options = new();
+        _maxLongName = 0;
     }
 
     public SimpleCLIArgsParser<TSelf> AddOption(OptionInfo<TSelf> info)
@@ -26,7 +28,12 @@ public class SimpleCLIArgsParser<TSelf> where TSelf : class, new()
                 _options.Add($"-{info.Name}", info);
 
             if (info.LongName is not null)
+            {
+                if (info.ShowInHelp && _maxLongName < info.LongName.Length)
+                    _maxLongName = info.LongName.Length;
+
                 _options.Add($"--{info.LongName}", info.MakeAlias());
+            }
         }
         return this;
     }
@@ -41,7 +48,10 @@ public class SimpleCLIArgsParser<TSelf> where TSelf : class, new()
         $"{GetNameForHelp(x)}{GetLongNameForHelp(x.Value)}\t{x.Value.Description}";
 
     private string GetLongNameForHelp(OptionInfo<TSelf> o) =>
-        string.IsNullOrEmpty(o.LongName) ? "  \t" : o.HasName ? $",\t--{o.LongName}" : $"--{o.LongName}";
+        string.IsNullOrEmpty(o.LongName) ? "  \t" : o.HasName ? $",\t--{GetPaddedLongName(o)}" : $"--{GetPaddedLongName(o)}";
+
+    private string GetPaddedLongName(OptionInfo<TSelf> o) =>
+        o?.LongName?.PadRight(_maxLongName) ?? "";
 
     private string GetNameForHelp(KeyValuePair<string, OptionInfo<TSelf>> x) =>
         x.Value.HasName ? x.Key : "\t";
@@ -68,7 +78,7 @@ public class SimpleCLIArgsParser<TSelf> where TSelf : class, new()
 
             if (!_options.ContainsKey(arg))
             {
-                if (_config.Style != ArgsStyle.UNIX)
+                if (_config.Style != ArgsStyle.POSIX)
                     continue;
 
                 foreach (var o in ProcessCluster(arg))
