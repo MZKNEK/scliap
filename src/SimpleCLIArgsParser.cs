@@ -41,20 +41,15 @@ public class SimpleCLIArgsParser<TSelf> where TSelf : class, new()
     public SimpleCLIArgsParser<TSelf> AddDefaultHelpOptions(Action<TSelf, string> action, string description
         = "prints help") => AddOption(new(action, description, name: 'h', longName: "help"));
 
-    public string GetHelp() => string.Join("\n", _options.Where(x => x.Value.ShowInHelp)
-        .Select(x => GetHelpEntry(x)));
+    public string GetHelp() => string.Join("\n", _options.Where(x => x.Value.ShowInHelp).Select(x => GetHelpEntry(x)));
 
-    private string GetHelpEntry(KeyValuePair<string, OptionInfo<TSelf>> x) =>
-        $"{GetNameForHelp(x)}{GetLongNameForHelp(x.Value)}\t{x.Value.Description}";
+    private string GetHelpEntry(KeyValuePair<string, OptionInfo<TSelf>> x) => $"{GetNameForHelp(x)}{GetLongNameForHelp(x.Value)}\t{x.Value.Description}";
 
-    private string GetLongNameForHelp(OptionInfo<TSelf> o) =>
-        string.IsNullOrEmpty(o.LongName) ? "  \t" : o.HasName ? $",\t--{GetPaddedLongName(o)}" : $"--{GetPaddedLongName(o)}";
+    private string GetLongNameForHelp(OptionInfo<TSelf> o) => o.HasName ? $",\t{GetPaddedLongName(o)}" : $"{GetPaddedLongName(o)}";
 
-    private string GetPaddedLongName(OptionInfo<TSelf> o) =>
-        o?.LongName?.PadRight(_maxLongName) ?? "";
+    private string GetPaddedLongName(OptionInfo<TSelf> o) => string.IsNullOrEmpty(o.LongName) ? "".PadRight(_maxLongName + 2) : $"--{o.LongName.PadRight(_maxLongName)}";
 
-    private string GetNameForHelp(KeyValuePair<string, OptionInfo<TSelf>> x) =>
-        x.Value.HasName ? x.Key : "\t";
+    private string GetNameForHelp(KeyValuePair<string, OptionInfo<TSelf>> x) => x.Value.HasName ? x.Key : "\t";
 
     public TSelf Parse(string[] args)
     {

@@ -28,8 +28,11 @@ public class SCLIAPTest
         parser.AddOption(new((arg, _) => { arg.Test = true; },
             "enable test",
             longName: "test"));
+        parser.AddOption(new((arg, _) => { arg.Test = false; },
+            "show version",
+            longName: "version"));
 
-        var exp = "-h,\t--help\tprints help\n-v  \t\tenable verbose\n-p,\t--path\tenable path\n\t--test\tenable test";
+        var exp = "-h,\t--help   \tprints help\n-v,\t         \tenable verbose\n-p,\t--path   \tenable path\n\t--test   \tenable test\n\t--version\tshow version";
         Assert.AreEqual(exp, parser.GetHelp());
     }
 
@@ -163,7 +166,7 @@ public class SCLIAPTest
         Assert.IsTrue(o.Verbose);
         Assert.IsTrue(o.Help);
 
-        var help = "-h,\t--help\tprints help\n-v  \t\tenable verbose\n-o,\t--out \toutput path";
+        var help = "-h,\t--help\tprints help\n-v,\t      \tenable verbose\n-o,\t--out \toutput path";
         Assert.AreEqual(help, parser.GetHelp());
     }
 
